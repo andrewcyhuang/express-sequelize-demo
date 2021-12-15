@@ -1,10 +1,11 @@
 const express = require('express');
 const indexRouter = require('./routes/index');
-const userRouter = require('./routes/users');
+const authorsRouter = require('./routes/authors');
 const expressLayouts = require('express-ejs-layouts');
+const { sequelize } = require('./models');
 
 if (process.env.NODE_ENV !== 'production')
-  require('dotenv').parse();
+  require('dotenv').config();
 
 const logger = (req, res, next) => {
   console.log(req.originalUrl)
@@ -21,6 +22,11 @@ app.use(logger);
 app.use(express.urlencoded({ extended: true }))
 
 app.use('/', indexRouter);
-app.use('/users', userRouter);
+app.use('/authors', authorsRouter);
 
-app.listen(process.env.PORT || 3000)
+
+app.listen(process.env.PORT || 3000, async () => {
+  console.log(`Server listening on port: ${process.env.PORT || 3000}`);
+  await sequelize.authenticate();
+  console.log(`Database connected!`);
+})
